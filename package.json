@@ -1,0 +1,45 @@
+{
+  "name": "backend_api",
+  "version": "1.0.0",
+  "description": "backend for my frontend webpage",
+  "main": "./src/index.js",
+  "scripts": {
+    "lint": "eslint src",
+    "build": "npm run \"lint\" && babel src --out-dir dist",
+    "start": "nodemon -w src --exec \"eslint src && babel src --out-dir dist && node ./dist/bin/www.js\"",
+    "serve": "node ./dist/bin/www.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "dependencies": {
+    "babel-core": "^6.26.3",
+    "babel-plugin-transform-runtime": "^6.23.0",
+    "babel-preset-env": "^1.7.0",
+    "koa": "^2.13.0",
+    "koa-bodyparser": "^4.3.0",
+    "koa-router": "^10.0.0",
+    "nodemon": "^2.0.6"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/maiersk/backend_api.git"
+  },
+  "keywords": [
+    "node.js",
+    "api"
+  ],
+  "author": "maserik",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/maiersk/backend_api/issues"
+  },
+  "homepage": "https://github.com/maiersk/backend_api#readme",
+  "devDependencies": {
+    "@typescript-eslint/eslint-plugin": "^4.11.1",
+    "@typescript-eslint/parser": "^4.11.1",
+    "eslint": "^7.17.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1"
+  }
+}
