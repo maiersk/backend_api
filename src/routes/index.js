@@ -19,17 +19,15 @@ const useRoutes = (dirname) => {
     const routePath = path.join(dirname, route)
 
     const stat = fs.lstatSync(routePath)
-    if (routeName !== 'index') {
-      if (stat.isDirectory()) {
-        useRoutes(routePath)
-      } else {
-        const module = require(routePath)
-        router.use(`/${routeName}`, module.routes(), router.allowedMethods())
-      }
+    if (stat.isDirectory()) {
+      useRoutes(routePath)
+    } else {
+      const module = require(routePath)
+      router.use(`/${routeName}`, module.routes(), router.allowedMethods())
     }
   })
 }
-useRoutes(__dirname)
+useRoutes(path.join(__dirname, '/api'))
 
 module.exports = {
   router,
