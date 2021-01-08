@@ -6,7 +6,7 @@
   "scripts": {
     "lint": "eslint src",
     "build": "npm run \"lint\" && babel src --out-dir dist",
-    "start": "nodemon -w src --exec \"eslint src && babel src --out-dir dist && node ./dist/bin/www.js\"",
+    "start": "nodemon -w src --exec \" babel src --out-dir dist && node ./dist/bin/www.js\"",
     "serve": "node ./dist/bin/www.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
@@ -17,7 +17,11 @@
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^10.0.0",
-    "nodemon": "^2.0.6"
+    "koa-session": "^6.1.0",
+    "nodemon": "^2.0.6",
+    "pg": "^8.5.1",
+    "pg-hstore": "^2.3.3",
+    "sequelize": "^6.3.5"
   },
   "repository": {
     "type": "git",
