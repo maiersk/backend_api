@@ -1,7 +1,6 @@
 import fs from 'fs'
 import path from 'path'
 import Router from 'koa-router'
-import bodyParser from 'koa-bodyparser'
 
 const router = new Router()
 
@@ -29,7 +28,4 @@ const useRoutes = (dirname) => {
 }
 useRoutes(path.join(__dirname, '/api'))
 
-module.exports = {
-  router,
-  bodyParser
-}
+module.exports = router
