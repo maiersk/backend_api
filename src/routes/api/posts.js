@@ -1,0 +1,74 @@
+import Router from 'koa-router'
+import Post from '../../models/post'
+import { msg, err, data } from '../../lib/res_msg'
+
+const posts = new Router()
+
+posts.get('/', async (ctx, next) => {
+  const posts = await Post.findAll({ raw: true })
+  ctx.body = data(posts)
+})
+posts.get('/:id', async (ctx, next) => {
+  const postId = ctx.params.id
+  const post = await Post.findOne({ where: postId })
+  ctx.body = data(post)
+})
+
+posts.post('/', (ctx, next) => {
+  const userId = ctx.session.userid
+  const { title, tags, content } = ctx.request.body
+
+  try {
+    if (!userId) { throw new Error('no login') }
+
+    const post = Post.build({
+      title,
+      userId,
+      tags,
+      content,
+    })
+    post.save()
+    ctx.body = data(post)
+  } catch (error) {
+    ctx.body = err(error.msg)
+  }
+})
+
+posts.put('/:id', (ctx, next) => {
+  const userId = ctx.session.userId
+  const postId = ctx.params.id
+  const { title, tags, content } = ctx.request.body
+
+  try {
+    const post = await Post.findOne({
+      where: { id: postId }
+    })
+    if (post.authorId !== userId) {
+      throw new Error('you are not author')
+    }
+    await Post.update({
+      title, tags, content
+    }, {
+      where: { id: postId }
+    })
+
+    ctx.body = msg('update succ')
+  } catch (error) {
+    ctx.body = err(error.msg)
+  }
+})
+
+posts.delete('/:id', (ctx, next) => {
+  const postId = ctx.params.id
+
+  try {
+    const post = Post.destroy({
+      where: { id: postId }
+    })
+    ctx.body = msg('deleted')
+  } catch (error) {
+    ctx.body = err(error.msg)
+  }
+})
+
+module.exports = posts
