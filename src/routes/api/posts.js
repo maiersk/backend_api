@@ -3,38 +3,40 @@ import Post from '../../models/post'
 import { msg, err, data } from '../../lib/res_msg'
 
 const posts = new Router()
+posts.prefix('/posts')
 
 posts.get('/', async (ctx, next) => {
   const posts = await Post.findAll({ raw: true })
   ctx.body = data(posts)
 })
+
 posts.get('/:id', async (ctx, next) => {
   const postId = ctx.params.id
   const post = await Post.findOne({ where: postId })
   ctx.body = data(post)
 })
 
-posts.post('/', (ctx, next) => {
+posts.post('/', async (ctx, next) => {
   const userId = ctx.session.userid
   const { title, tags, content } = ctx.request.body
 
   try {
     if (!userId) { throw new Error('no login') }
 
-    const post = Post.build({
+    const post = await Post.build({
       title,
       userId,
       tags,
       content,
     })
-    post.save()
+    await post.save()
     ctx.body = data(post)
   } catch (error) {
-    ctx.body = err(error.msg)
+    ctx.body = err(error.message)
   }
 })
 
-posts.put('/:id', (ctx, next) => {
+posts.put('/:id', async (ctx, next) => {
   const userId = ctx.session.userId
   const postId = ctx.params.id
   const { title, tags, content } = ctx.request.body
@@ -54,20 +56,20 @@ posts.put('/:id', (ctx, next) => {
 
     ctx.body = msg('update succ')
   } catch (error) {
-    ctx.body = err(error.msg)
+    ctx.body = err(error.message)
   }
 })
 
-posts.delete('/:id', (ctx, next) => {
+posts.delete('/:id', async (ctx, next) => {
   const postId = ctx.params.id
 
   try {
-    const post = Post.destroy({
+    await Post.destroy({
       where: { id: postId }
     })
     ctx.body = msg('deleted')
   } catch (error) {
-    ctx.body = err(error.msg)
+    ctx.body = err(error.message)
   }
 })
 

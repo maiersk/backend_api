@@ -1,5 +1,5 @@
 import sequelize from '../database/Sequelize'
-import { DataTypes, Model } from 'sequelize';
+import { DataTypes, Model } from 'sequelize'
 
 class Tag extends Model {
 

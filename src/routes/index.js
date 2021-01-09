@@ -14,7 +14,6 @@ const useRoutes = (dirname) => {
   const routes = fs.readdirSync(dirname)
 
   routes.forEach((route) => {
-    const routeName = route.replace('.js', '')
     const routePath = path.join(dirname, route)
 
     const stat = fs.lstatSync(routePath)
@@ -22,7 +21,10 @@ const useRoutes = (dirname) => {
       useRoutes(routePath)
     } else {
       const module = require(routePath)
-      router.use(`/${routeName}`, module.routes(), router.allowedMethods())
+      router.use(
+        module.routes(),
+        router.allowedMethods()
+      )
     }
   })
 }

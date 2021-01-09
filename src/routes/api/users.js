@@ -3,9 +3,10 @@ import { err, msg, data } from '../../lib/res_msg'
 import User from '../../models/user'
 
 const users = new Router()
+users.prefix('/users')
 
 users.get('/', async (ctx, next) => {
-  const users = User.findAll({ raw: true })
+  const users = await User.findAll({ raw: true })
   ctx.body = data(users)
 })
 
@@ -13,7 +14,7 @@ users.get('/:id', async (ctx, next) => {
   const id = ctx.params.id
 
   try {
-    const user = User.findOne({
+    const user = await User.findOne({
       where: { id }
     })
     if (!user) { throw new Error('not fond users') }
@@ -31,12 +32,13 @@ users.post('/', async (ctx, next) => {
   try {
     const user = await User.build({
       name: name.trim(),
-    })
+    }, { raw: true })
 
     await user.save()
     ctx.body = data(user, msg('create succ'))
   } catch (error) {
-    ctx.body = err(error.original.code)
+    console.log(error);
+    ctx.body = err('error')
   }
 })
 

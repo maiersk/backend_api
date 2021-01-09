@@ -1,25 +1,74 @@
 import Router from 'koa-router'
+import Comment from '../../models/Comment'
+import { data, err, msg } from '../../lib/res_msg'
 
 const comments = new Router()
+comments.prefix('/comments')
 
-comments.get('/', (ctx, next) => {
-
+comments.get('/', async (ctx, next) => {
+  const comments = await Comment.findAll({ raw: true })
+  ctx.body = data(comments)
 })
 
-comments.get('/:id', (ctx, next) => {
+comments.get('/:id', async (ctx, next) => {
+  const id = ctx.params.id
+  if (!id) { return }
 
+  const comment = await Comment.findOne({ where: { id } })
+  if (comment) {
+    ctx.body = data(comment)
+  } else {
+    ctx.body = err('not find')
+  }
 })
 
-comments.post('/', (ctx, next) => {
+comments.post('/', async (ctx, next) => {
+  const userid = ctx.session.userid
+  const content = ctx.request.body
 
+  try {
+    const comment = await Comment.build({
+      userid,
+      content
+    })
+    ctx.body = data(comment)
+  } catch (error) {
+    ctx.body = err(err.message)
+  }
 })
 
-comments.put('/:id', (ctx, next) => {
+comments.put('/:id', async (ctx, next) => {
+  const userid = ctx.session.userid
+  const content = ctx.request.body
 
+  try {
+    const comment = await Comment.findOne({
+      where: { id: userid }
+    })
+    if (!comment) {
+      throw new Error('you are not owner')
+    }
+    await Comment.update({
+      content
+    }, {
+      where: { id }
+    })
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
-comments.delete('/:id', (ctx, next) => {
+comments.delete('/:id', async (ctx, next) => {
+  const id = ctx.params.id
 
+  try {
+    await Comment.destroy({
+      where: { id }
+    })
+    ctx.body = msg('deleted')
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
-export default comments
+module.exports =comments

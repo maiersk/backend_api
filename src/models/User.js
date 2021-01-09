@@ -12,13 +12,10 @@ User.init({
     type: DataTypes.CHAR(10),
     allowNull: false,
   },
-  group: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
   avatar: {
     type: DataTypes.STRING,
-  }
+  },
+  
 }, {
   sequelize,
   modelName: 'user'

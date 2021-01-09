@@ -1,3 +1,5 @@
+import {clientID, clientSecret} from './github'
+
 const session_cfg = {
     key: 'qwoejoxjcasd',
     maxAge: 86400000,
@@ -13,4 +15,11 @@ const db = {
     password: '123456'
 }
 
-export { db, session }
+const oauth = {
+    github: {
+        clientID,
+        clientSecret
+    },
+}
+
+export { db, session_cfg, oauth }
