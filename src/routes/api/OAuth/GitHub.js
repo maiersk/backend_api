@@ -1,6 +1,7 @@
 import axios from 'axios'
 import Router from 'koa-router'
 import { oauth } from '../../../config'
+import { err, data } from '../../../lib/res_msg'
 
 const gitHub = new Router()
 gitHub.prefix('/oauth/github')
@@ -23,18 +24,22 @@ gitHub.get('/redirect', async (ctx, next) => {
     }
   })
 
-  const res_token = req_token.data.access_token
+  try {
+    const res_token = req_token.data.access_token
+    const base64 = new Buffer.from(res_token).toString('base64') 
 
-  // const result = await axios({
-  //   method: 'get',
-  //   url: 'https://api.github.com/user',
-  //   headers: {
-  //     accept: 'application/json',
-  //     Authorization: `token ${res_token}`
-  //   }
-  // })
-
-  ctx.body = res_token
+    const result = await axios({
+      method: 'get',
+      url: 'https://api.github.com/user',
+      headers: {
+        Authorization: `Basic ${base64}`,
+      }
+    })
+  
+    ctx.body = data(result.data)
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 module.exports = gitHub
