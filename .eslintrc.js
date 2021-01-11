@@ -17,5 +17,6 @@ module.exports = {
     "rules": {
         "indent": ["warn", 2],
         "eqeqeq": "warn",
+        'prefer-const': 'off'
     }
 };

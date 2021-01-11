@@ -5,17 +5,17 @@
   "main": "./src/index.js",
   "scripts": {
     "lint": "eslint src",
+    "fix": "eslint ./src --fix",
     "build": "npm run \"lint\" && babel src --out-dir dist",
-    "start": "nodemon -w src --exec \" babel src --out-dir dist && node ./dist/bin/www.js\"",
+    "start": "nodemon -w src --exec \"eslint src && babel src --out-dir dist && node ./dist/bin/www.js\"",
     "serve": "node ./dist/bin/www.js",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "@koa/cors": "^3.1.0",
+    "@babel/plugin-transform-runtime": "^7.12.10",
+    "@babel/preset-env": "^7.12.11",
     "axios": "^0.21.1",
-    "babel-core": "^6.26.3",
-    "babel-plugin-transform-runtime": "^6.23.0",
-    "babel-preset-env": "^1.7.0",
+    "@koa/cors": "^3.1.0",
     "koa": "^2.13.0",
     "koa-bodyparser": "^4.3.0",
     "koa-router": "^10.0.0",
@@ -42,7 +42,8 @@
   "devDependencies": {
     "@typescript-eslint/eslint-plugin": "^4.11.1",
     "@typescript-eslint/parser": "^4.11.1",
-    "babel-cli": "^6.26.0",
+    "@babel/cli": "^7.12.10",
+    "@babel/core": "^7.12.10",
     "eslint": "^7.17.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
