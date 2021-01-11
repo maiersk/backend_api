@@ -1,6 +1,7 @@
 import fs from 'fs'
 import path from 'path'
 import Router from 'koa-router'
+import { err, msg } from '../lib/res_msg'
 
 const router = new Router()
 
@@ -10,6 +11,15 @@ router.get('/', async (ctx, next) => {
   ctx.body = `
     <h1>Hello${user?.name ?? ''}</h1>
   `
+})
+
+router.get('/signout', async (ctx, next) => {
+  if (ctx.session.use) {
+    ctx.session.user = null
+    ctx.body = msg('signout succ')
+  } else {
+    ctx.body = err('no signin')
+  }
 })
 
 const useRoutes = (dirname) => {

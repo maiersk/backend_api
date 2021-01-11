@@ -16,20 +16,22 @@ gitHub.get('/', async (ctx, next) => {
 
 gitHub.get('/redirect', async (ctx, next) => {
   const codeTemp = ctx.request.query.code
-
-  const reqToken = await axios({
-    method: 'post',
-    url: 'https://github.com/login/oauth/access_token?' +
-      `client_id=${oauth.github.clientID}&` +
-      `client_secret=${oauth.github.clientSecret}&` +
-      `code=${codeTemp}`,
-    headers: {
-      accept: 'application/json'
-    }
-  })
-
   try {
-    const resToken = reqToken.data.access_token
+    if (ctx.session.user) { throw new Error('logined') }
+
+    const reqToken = await axios({
+      method: 'post',
+      url: 'https://github.com/login/oauth/access_token?' +
+        `client_id=${oauth.github.clientID}&` +
+        `client_secret=${oauth.github.clientSecret}&` +
+        `code=${codeTemp}`,
+      headers: {
+        accept: 'application/json'
+      }
+    })
+
+    const resToken = reqToken.data?.access_token
+    if (!resToken) { throw new Error('null token') }
 
     const result = await axios({
       method: 'get',
@@ -40,12 +42,17 @@ gitHub.get('/redirect', async (ctx, next) => {
     })
 
     const userInfo = result.data
-    const user = await User.create({
-      name: userInfo.name,
-      oauthType: 'G',
-      oauthId: resToken,
-      avatar: userInfo.avatar_url,
-      url: userInfo.html_url
+    const user = await User.findOrCreate({
+      where: {
+        oauthId: resToken
+      },
+      defaults: {
+        name: userInfo.name,
+        oauthType: 'G',
+        oauthId: resToken,
+        avatar: userInfo.avatar_url,
+        url: userInfo.html_url
+      }
     })
 
     ctx.session.user = user
