@@ -6,7 +6,7 @@ class Comment extends Model {
 }
 
 Comment.init({
-  userid: {
+  userId: {
     type: DataTypes.INTEGER,
     allowNull: false
   },

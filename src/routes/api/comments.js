@@ -38,12 +38,12 @@ comments.post('/', async (ctx, next) => {
 })
 
 comments.put('/:id', async (ctx, next) => {
-  const userid = ctx.session.userid
+  const id = ctx.session.userid
   const content = ctx.request.body
 
   try {
     const comment = await Comment.findOne({
-      where: { id: userid }
+      where: { id }
     })
     if (!comment) {
       throw new Error('you are not owner')
@@ -71,4 +71,4 @@ comments.delete('/:id', async (ctx, next) => {
   }
 })
 
-module.exports =comments
+module.exports = comments

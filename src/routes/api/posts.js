@@ -27,7 +27,7 @@ posts.post('/', async (ctx, next) => {
       title,
       userId,
       tags,
-      content,
+      content
     })
     await post.save()
     ctx.body = data(post)

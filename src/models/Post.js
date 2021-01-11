@@ -8,21 +8,21 @@ class Post extends Model {
 Post.init({
   authorId: {
     type: DataTypes.INTEGER,
-    allowNull: false,
+    allowNull: false
   },
   title: {
     type: DataTypes.STRING,
     allowNull: false
   },
   tags: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    type: DataTypes.ARRAY(DataTypes.INTEGER)
   },
   content: {
     type: DataTypes.TEXT,
     defaultValue: ''
   },
   comments: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    type: DataTypes.ARRAY(DataTypes.INTEGER)
   }
 }, {
   sequelize,

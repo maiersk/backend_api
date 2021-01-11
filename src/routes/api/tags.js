@@ -2,7 +2,7 @@ import Router from 'koa-router'
 import Tag from '../../models/Tag'
 import { data, msg, err } from '../../lib/res_msg'
 
-const tags = new Router
+const tags = new Router()
 tags.prefix('/tags')
 
 tags.get('/', async (ctx, next) => {

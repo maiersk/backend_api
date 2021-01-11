@@ -1,42 +1,56 @@
 import axios from 'axios'
 import Router from 'koa-router'
-import { oauth } from '../../../config'
+import User from '../../../models/User'
+import { site, oauth } from '../../../config'
 import { err, data } from '../../../lib/res_msg'
 
 const gitHub = new Router()
-gitHub.prefix('/oauth/github')
+const routerPath = '/oauth/github'
+gitHub.prefix(routerPath)
 
 gitHub.get('/', async (ctx, next) => {
-  ctx.body = `https://github.com/login/oauth/authorize?client_id=${oauth.github.clientID}&redirect_uri=http://localhost:3000/oauth/github/redirect`
+  ctx.body = data('https://github.com/login/oauth/authorize?' +
+    `client_id=${oauth.github.clientID}&redirect_uri=` +
+    `http://${site.domain}:${site.port}${routerPath}/redirect`)
 })
 
 gitHub.get('/redirect', async (ctx, next) => {
-  const temp_code = ctx.request.query.code
+  const codeTemp = ctx.request.query.code
 
-  const req_token = await axios({
+  const reqToken = await axios({
     method: 'post',
     url: 'https://github.com/login/oauth/access_token?' +
       `client_id=${oauth.github.clientID}&` +
       `client_secret=${oauth.github.clientSecret}&` +
-      `code=${temp_code}`,
+      `code=${codeTemp}`,
     headers: {
       accept: 'application/json'
     }
   })
 
   try {
-    const res_token = req_token.data.access_token
-    const base64 = new Buffer.from(res_token).toString('base64') 
+    const resToken = reqToken.data.access_token
 
     const result = await axios({
       method: 'get',
       url: 'https://api.github.com/user',
       headers: {
-        Authorization: `Basic ${base64}`,
+        Authorization: `Bearer ${resToken}`
       }
     })
-  
-    ctx.body = data(result.data)
+
+    const userInfo = result.data
+    const user = await User.create({
+      name: userInfo.name,
+      oauthType: 'G',
+      oauthId: resToken,
+      avatar: userInfo.avatar_url,
+      url: userInfo.html_url
+    })
+
+    ctx.session.user = user
+
+    ctx.body = data('login succ')
   } catch (error) {
     ctx.body = err(error.message)
   }

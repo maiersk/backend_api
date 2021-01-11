@@ -6,17 +6,17 @@ class Tag extends Model {
 }
 
 Tag.init({
-    name: {
-        type: DataTypes.STRING,
-        allowNull: false
-    },
-    color: {
-        type: DataTypes.ARRAY(DataTypes.INTEGER),
-        defaultValue: [0,0,0,0]
-    }
+  name: {
+    type: DataTypes.STRING,
+    allowNull: false
+  },
+  color: {
+    type: DataTypes.ARRAY(DataTypes.INTEGER),
+    defaultValue: [0, 0, 0, 0]
+  }
 }, {
-    sequelize,
-    modelName: 'tag'
+  sequelize,
+  modelName: 'tag'
 })
 
 export default Tag

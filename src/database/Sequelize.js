@@ -1,7 +1,7 @@
 import { db } from '../config'
 import { Sequelize } from 'sequelize'
 
-const { 
+const {
   database,
   username,
   password,

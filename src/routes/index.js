@@ -5,8 +5,10 @@ import Router from 'koa-router'
 const router = new Router()
 
 router.get('/', async (ctx, next) => {
+  const user = ctx.session.user
+
   ctx.body = `
-    <h1>Hello</h1>
+    <h1>Hello${user?.name ?? ''}</h1>
   `
 })
 
@@ -30,4 +32,4 @@ const useRoutes = (dirname) => {
 }
 useRoutes(path.join(__dirname, '/api'))
 
-module.exports = router
+export default router

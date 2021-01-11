@@ -11,19 +11,19 @@ Project.init({
     allowNull: false
   },
   url: {
-    type: DataTypes.CHAR,
+    type: DataTypes.CHAR
   },
   desction: {
-    type: DataTypes.STRING,
+    type: DataTypes.STRING
   },
   content: {
-    type: DataTypes.TEXT,
+    type: DataTypes.TEXT
   },
   started_time: {
-    type: DataTypes.TIME,
+    type: DataTypes.TIME
   },
   ended_time: {
-    type: DataTypes.TIME,
+    type: DataTypes.TIME
   }
 }, {
   sequelize,
