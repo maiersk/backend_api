@@ -11,9 +11,18 @@ posts.get('/', async (ctx, next) => {
 })
 
 posts.get('/:id', async (ctx, next) => {
-  const postId = ctx.params.id
-  const post = await Post.findOne({ where: postId })
-  ctx.body = data(post)
+  const id = ctx.params.id
+
+  try {
+    const post = await Post.findOne({ where: { id } })
+    if (post) {
+      ctx.body = data(post)
+    } else {
+      throw new Error('not find')
+    }
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 posts.post('/', async (ctx, next) => {
@@ -61,11 +70,11 @@ posts.put('/:id', async (ctx, next) => {
 })
 
 posts.delete('/:id', async (ctx, next) => {
-  const postId = ctx.params.id
+  const id = ctx.params.id
 
   try {
     await Post.destroy({
-      where: { id: postId }
+      where: { id }
     })
     ctx.body = msg('deleted')
   } catch (error) {

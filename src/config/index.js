@@ -1,16 +1,22 @@
 import { clientID, clientSecret } from './OAuth/github'
 import { STEAM_APIKEY } from './OAuth/steam'
+import { siteOwner, signkeys } from './site'
 
 const site = {
-  domain: '192.168.199.153',
-  port: 3000
+  domain: 'localhost',
+  port: 3000,
+  owner: {
+    // githubId,
+    // steamId
+    ...siteOwner
+  }
 }
 
 const sessionCfg = {
   key: 'koa:blog',
   maxAge: 86400000,
   overwrite: true,
-  signkeys: ['ojoiBn kAar Solscs kpasjemy'],
+  signkeys,
   signed: true
 }
 

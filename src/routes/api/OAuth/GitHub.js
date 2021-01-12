@@ -9,9 +9,9 @@ const routerPath = '/oauth/github'
 gitHub.prefix(routerPath)
 
 gitHub.get('/', async (ctx, next) => {
-  ctx.body = data('https://github.com/login/oauth/authorize?' +
+  ctx.body = '<a href="' + 'https://github.com/login/oauth/authorize?' +
     `client_id=${oauth.github.clientID}&redirect_uri=` +
-    `http://${site.domain}:${site.port}${routerPath}/redirect`)
+    `http://${site.domain}:${site.port}${routerPath}/redirect` + '">sigin in</a>'
 })
 
 gitHub.get('/redirect', async (ctx, next) => {
@@ -41,20 +41,21 @@ gitHub.get('/redirect', async (ctx, next) => {
       }
     })
 
-    const userInfo = result.data
+    const githubUser = result.data
     const user = await User.findOrCreate({
       where: {
-        oauthId: resToken
+        oauthId: '' + githubUser.id
       },
       defaults: {
-        name: userInfo.name,
+        name: githubUser.name,
         oauthType: 'G',
-        oauthId: resToken,
-        avatar: userInfo.avatar_url,
-        url: userInfo.html_url
+        oauthId: '' + githubUser.id,
+        avatar: githubUser.avatar_url,
+        url: githubUser.html_url
       }
     })
 
+    ctx.session.token = resToken
     ctx.session.user = user
 
     ctx.body = data('login succ')

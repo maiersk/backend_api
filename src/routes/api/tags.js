@@ -20,7 +20,7 @@ tags.get('/:id', async (ctx, next) => {
     if (tag) {
       ctx.body = data(tag)
     } else {
-      ctx.body = msg('not find')
+      throw new Error('not find')
     }
   } catch (error) {
     ctx.body = err(error.message)
@@ -35,6 +35,8 @@ tags.post('/', async (ctx, next) => {
       name, color
     })
     await tag.save()
+
+    ctx.body = msg('succ')
   } catch (error) {
     ctx.body = err(error.message)
   }

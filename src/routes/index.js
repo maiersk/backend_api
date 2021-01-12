@@ -14,7 +14,7 @@ router.get('/', async (ctx, next) => {
 })
 
 router.get('/signout', async (ctx, next) => {
-  if (ctx.session.use) {
+  if (ctx.session.user) {
     ctx.session.user = null
     ctx.body = msg('signout succ')
   } else {

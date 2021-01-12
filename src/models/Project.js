@@ -19,10 +19,10 @@ Project.init({
   content: {
     type: DataTypes.TEXT
   },
-  started_time: {
+  startedTime: {
     type: DataTypes.TIME
   },
-  ended_time: {
+  endedTime: {
     type: DataTypes.TIME
   }
 }, {
