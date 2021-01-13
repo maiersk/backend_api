@@ -18,37 +18,66 @@ users.get('/:id', async (ctx, next) => {
       where: { id }
     })
     if (!user) { throw new Error('not fond users') }
-    ctx.body = data(user, msg('find one'))
+    ctx.body = data(user)
   } catch (error) {
     ctx.body = err(error.message)
   }
 })
 
 users.post('/', async (ctx, next) => {
-  const { name } = ctx.request.body
+  const {
+    name,
+    oauthType,
+    oauthId,
+    avatar
+  } = ctx.request.body
 
   try {
-    const user = await User.build({
-      name: name.trim()
-    }, { raw: true })
+    if (!name || !oauthId) {
+      throw new Error('name or oauthid cannot ne null')
+    }
 
-    await user.save()
-    ctx.body = data(user, msg('create succ'))
+    const user = await User.findOrCreate({
+      where: { oauthId },
+      defaults: {
+        name,
+        oauthType,
+        oauthId,
+        avatar
+      }
+    })
+
+    ctx.body = data(user)
   } catch (error) {
     console.log(error)
     ctx.body = err(error.message)
   }
 })
 
-users.put('/', async (ctx, next) => {
-  const id = ctx.session.userid
-  const avatar = ctx.request.body
+users.put('/:id', async (ctx, next) => {
+  const id = ctx.params.id
+  const {
+    name,
+    oauthType,
+    oauthId,
+    avatar
+  } = ctx.request.body
+
   try {
-    const user = await User.update({ avatar }, {
-      where: { id }
-    })
+    let user = await User.findByPk(id, { raw: true })
+
     if (user) {
+      user = await User.update({
+        name,
+        oauthType,
+        oauthId,
+        avatar
+      }, {
+        where: { id }
+      })
       ctx.body = msg('update user')
+    } else {
+      throw new Error('not find')
     }
   } catch (error) {
     ctx.body = err(error.message)
@@ -57,18 +86,20 @@ users.put('/', async (ctx, next) => {
 
 users.delete('/:id', async (ctx, next) => {
   const id = ctx.params.id
-  const user = ctx.session.user
+  // const opUser = ctx.session.user
 
   try {
+    const user = await User.findByPk(id, { raw: true })
+
     if (user) {
-      const user = await User.findByPk(id, { raw: true })
       await User.destroy({
         where: { id }
       })
       console.log(user)
+
       ctx.body = { succ: 'deleted' }
     } else {
-      ctx.body = err('not find')
+      throw new Error('not find')
     }
   } catch (error) {
     ctx.body = err(error.message)

@@ -48,18 +48,29 @@ steam.get('/redirect', async (ctx, next) => {
     if (!result.data?.response) { throw new Error('steam apikey error') }
     const { personaname, profileurl, avatar } = result.data.response.players[0]
 
-    const [user] = await User.findOrCreate({
-      where: {
-        oauthId: steamid64
-      },
-      defaults: {
+    let user = await User.findOne({
+      where: { oauthId: steamid64 }
+    })
+
+    if (!user) {
+      user = await User.create({
         name: personaname,
         oauthType: 'S',
         oauthId: steamid64,
         avatar,
         url: profileurl
-      }
-    })
+      })
+    } else {
+      user = await User.update({
+        name: personaname,
+        avatar,
+        url: profileurl
+      }, {
+        where: {
+          oauthId: steamid64
+        }
+      })
+    }
 
     ctx.session.user = user
 

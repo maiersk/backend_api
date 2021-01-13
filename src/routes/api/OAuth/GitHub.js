@@ -42,18 +42,30 @@ gitHub.get('/redirect', async (ctx, next) => {
     })
 
     const githubUser = result.data
-    const user = await User.findOrCreate({
-      where: {
-        oauthId: '' + githubUser.id
-      },
-      defaults: {
+
+    let user = await User.findOne({
+      where: { oauthId: '' + githubUser.id }
+    })
+
+    if (!user) {
+      user = await User.Create({
         name: githubUser.name,
         oauthType: 'G',
         oauthId: '' + githubUser.id,
         avatar: githubUser.avatar_url,
         url: githubUser.html_url
-      }
-    })
+      })
+    } else {
+      user = await User.update({
+        name: githubUser.name,
+        avatar: githubUser.avatar_url,
+        url: githubUser.html_url
+      }, {
+        where: {
+          oauthId: '' + githubUser.id
+        }
+      })
+    }
 
     ctx.session.token = resToken
     ctx.session.user = user
