@@ -2,4 +2,4 @@
 node_modules
 /dist
 /src/config/OAuth/
-/src/config/siteOwner.js
+/src/config/site.js
