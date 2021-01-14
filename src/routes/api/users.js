@@ -1,4 +1,5 @@
 import Router from 'koa-router'
+import oauth from '../../lib/oauth_role'
 import { err, msg, data } from '../../lib/res_msg'
 import User from '../../models/user'
 
@@ -17,14 +18,14 @@ users.get('/:id', async (ctx, next) => {
     const user = await User.findOne({
       where: { id }
     })
-    if (!user) { throw new Error('not fond users') }
+    if (!user) { throw new Error('not find') }
     ctx.body = data(user)
   } catch (error) {
     ctx.body = err(error.message)
   }
 })
 
-users.post('/', async (ctx, next) => {
+users.post('/', oauth(), async (ctx, next) => {
   const {
     name,
     oauthType,
@@ -84,9 +85,8 @@ users.put('/:id', async (ctx, next) => {
   }
 })
 
-users.delete('/:id', async (ctx, next) => {
+users.delete('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
-  // const opUser = ctx.session.user
 
   try {
     const user = await User.findByPk(id, { raw: true })

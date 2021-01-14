@@ -10,11 +10,11 @@ comments.get('/', async (ctx, next) => {
   ctx.body = data(comments)
 })
 
-comments.get('/:id', async (ctx, next) => {
-  const id = ctx.params.id
+comments.get('/:userId', async (ctx, next) => {
+  const id = ctx.params.userId
   if (!id) { return }
 
-  const comment = await Comment.findOne({ where: { id } })
+  const comment = await Comment.findAll({ where: { id } })
   if (comment) {
     ctx.body = data(comment)
   } else {
@@ -23,14 +23,15 @@ comments.get('/:id', async (ctx, next) => {
 })
 
 comments.post('/', async (ctx, next) => {
-  const userid = ctx.session.userid
-  const content = ctx.request.body
+  const userid = ctx.session?.user?.userId
+  const { content } = ctx.request.body
 
   try {
-    const comment = await Comment.build({
+    const comment = await Comment.create({
       userid,
       content
     })
+
     ctx.body = data(comment)
   } catch (error) {
     ctx.body = err(err.message)

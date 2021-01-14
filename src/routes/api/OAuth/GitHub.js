@@ -48,7 +48,7 @@ gitHub.get('/redirect', async (ctx, next) => {
     })
 
     if (!user) {
-      user = await User.Create({
+      user = await User.create({
         name: githubUser.name,
         oauthType: 'G',
         oauthId: '' + githubUser.id,

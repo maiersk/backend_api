@@ -24,6 +24,10 @@ Project.init({
   },
   endedTime: {
     type: DataTypes.TIME
+  },
+  followCount: {
+    type: DataTypes.INTEGER,
+    defaultValue: 0
   }
 }, {
   sequelize,

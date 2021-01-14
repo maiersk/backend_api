@@ -34,7 +34,7 @@ posts.post('/', async (ctx, next) => {
 
     const post = await Post.build({
       title,
-      userId,
+      authorId: userId,
       tags,
       content
     })
