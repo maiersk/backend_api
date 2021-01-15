@@ -9,6 +9,10 @@ const site = {
     // githubId,
     // steamId
     ...siteOwner
+  },
+  frontend: {
+    domain: 'localhost',
+    port: 8080
   }
 }
 

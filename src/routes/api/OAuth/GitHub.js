@@ -2,16 +2,16 @@ import axios from 'axios'
 import Router from 'koa-router'
 import User from '../../../models/User'
 import { site, oauth } from '../../../config'
-import { err, data } from '../../../lib/res_msg'
+import { err } from '../../../lib/res_msg'
 
 const gitHub = new Router()
 const routerPath = '/oauth/github'
 gitHub.prefix(routerPath)
 
 gitHub.get('/', async (ctx, next) => {
-  ctx.body = '<a href="' + 'https://github.com/login/oauth/authorize?' +
+  ctx.body = 'https://github.com/login/oauth/authorize?' +
     `client_id=${oauth.github.clientID}&redirect_uri=` +
-    `http://${site.domain}:${site.port}${routerPath}/redirect` + '">sigin in</a>'
+    `http://${site.domain}:${site.port}${routerPath}/redirect`
 })
 
 gitHub.get('/redirect', async (ctx, next) => {
@@ -70,9 +70,10 @@ gitHub.get('/redirect', async (ctx, next) => {
     ctx.session.token = resToken
     ctx.session.user = user
 
-    ctx.body = data('login succ')
+    ctx.redirect(`http://${site.frontend.domain}:${site.frontend.port}`)
+    console.log(user)
   } catch (error) {
-    ctx.body = err(error.message)
+    console.log(err(error.message))
   }
 })
 

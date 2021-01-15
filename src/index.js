@@ -9,7 +9,9 @@ const app = new Koa()
 
 app.keys = sessionCfg.signkeys
 app.use(bodyParser())
-  .use(cors())
+  .use(cors({
+    origin: 'Access-Control-Allow-Origin'
+  }))
   .use(session(sessionCfg, app))
   .use(router.routes())
 

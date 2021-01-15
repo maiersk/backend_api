@@ -2,7 +2,7 @@ import Router from 'koa-router'
 import axios from 'axios'
 import buildUrl from '../../../util/buildUrl'
 import { site, oauth } from '../../../config/'
-import { err, data } from '../../../lib/res_msg'
+import { err } from '../../../lib/res_msg'
 import User from '../../../models/User'
 
 const steam = new Router()
@@ -22,8 +22,7 @@ steam.get('/', async (ctx, next) => {
     'openid.claimed_id': 'http://specs.openid.net/auth/2.0/identifier_select'
   })
 
-  // const data(`https://steamcommunity.com/openid/login?${url}`)
-  ctx.body = `<a href='https://steamcommunity.com/openid/login?${url}'>steam sign in</a>`
+  ctx.body = `https://steamcommunity.com/openid/login?${url}`
 })
 
 steam.get('/redirect', async (ctx, next) => {
@@ -74,10 +73,11 @@ steam.get('/redirect', async (ctx, next) => {
 
     ctx.session.user = user
 
-    ctx.body = data(user)
+    console.log(user)
   } catch (error) {
-    ctx.body = err(error.message)
+    console.log(err(error.message))
   }
+  ctx.redirect(`http://${site.frontend.domain}:${site.frontend.port}`)
 })
 
 module.exports = steam

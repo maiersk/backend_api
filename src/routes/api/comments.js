@@ -63,10 +63,16 @@ comments.delete('/:id', async (ctx, next) => {
   const id = ctx.params.id
 
   try {
-    await Comment.destroy({
-      where: { id }
-    })
-    ctx.body = msg('deleted')
+    const comment = await Comment.findByPk(id)
+
+    if (comment) {
+      await Comment.destroy({
+        where: { id }
+      })
+      ctx.body = msg('deleted')
+    } else {
+      throw new Error('not find')
+    }
   } catch (error) {
     ctx.body = err(error.message)
   }

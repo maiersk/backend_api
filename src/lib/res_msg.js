@@ -1,5 +1,6 @@
-function resPayload (data, name, payload) {
-  let result = {}
+function resPayload (success, data, name, payload) {
+  let result = { success }
+
   result[name] = data
   if (payload.length) {
     result.payload = payload
@@ -8,13 +9,13 @@ function resPayload (data, name, payload) {
 }
 
 const msg = (msg, ...payload) => {
-  return resPayload(msg, 'msg', payload)
+  return resPayload(true, msg, 'msg', payload)
 }
 const err = (err, ...payload) => {
-  return resPayload(err, 'err', payload)
+  return resPayload(false, err, 'err', payload)
 }
 const data = (data, ...payload) => {
-  return resPayload(data, 'data', payload)
+  return resPayload(true, data, 'data', payload)
 }
 
 export { msg, err, data }
