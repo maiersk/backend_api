@@ -70,11 +70,11 @@ gitHub.get('/redirect', async (ctx, next) => {
     ctx.session.token = resToken
     ctx.session.user = user
 
-    ctx.redirect(`http://${site.frontend.domain}:${site.frontend.port}`)
     console.log(user)
   } catch (error) {
     console.log(err(error.message))
   }
+  ctx.redirect(`http://${site.frontend.domain}:${site.frontend.port}`)
 })
 
 module.exports = gitHub
