@@ -1,7 +1,7 @@
 function resPayload (success, data, payload) {
   let result = { success }
 
-  result[0] = data
+  result.data = data
   if (payload.length) {
     result.payload = payload
   }

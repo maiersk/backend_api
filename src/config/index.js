@@ -3,7 +3,7 @@ import { STEAM_APIKEY } from './OAuth/steam'
 import { siteOwner, signkeys } from './site'
 
 const site = {
-  domain: 'localhost',
+  domain: '192.168.199.153',
   port: 3000,
   owner: {
     // githubId,
@@ -11,7 +11,7 @@ const site = {
     ...siteOwner
   },
   frontend: {
-    domain: 'localhost',
+    domain: '192.168.199.153',
     port: 8080
   }
 }
@@ -25,7 +25,7 @@ const sessionCfg = {
 }
 
 const db = {
-  host: 'localhost',
+  host: '192.168.199.153',
   port: 5432,
   dialect: 'postgres',
   database: 'myblog',

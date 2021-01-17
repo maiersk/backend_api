@@ -60,15 +60,10 @@ steam.get('/redirect', async (ctx, next) => {
         url: profileurl
       })
     } else {
-      user = await User.update({
-        name: personaname,
-        avatar,
-        url: profileurl
-      }, {
-        where: {
-          oauthId: steamid64
-        }
-      })
+      user.name = personaname
+      user.avatar = avatar
+      user.url = profileurl
+      await user.save()
     }
 
     ctx.session.user = user

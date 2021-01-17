@@ -56,15 +56,10 @@ gitHub.get('/redirect', async (ctx, next) => {
         url: githubUser.html_url
       })
     } else {
-      user = await User.update({
-        name: githubUser.name,
-        avatar: githubUser.avatar_url,
-        url: githubUser.html_url
-      }, {
-        where: {
-          oauthId: '' + githubUser.id
-        }
-      })
+      user.name = githubUser.name
+      user.avatar = githubUser.avatar_url
+      user.url = githubUser.html_url
+      await user.save()
     }
 
     ctx.session.token = resToken
