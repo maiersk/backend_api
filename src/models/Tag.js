@@ -11,8 +11,8 @@ Tag.init({
     allowNull: false
   },
   color: {
-    type: DataTypes.ARRAY(DataTypes.INTEGER),
-    defaultValue: [0, 0, 0, 0]
+    type: DataTypes.CHAR(7),
+    defaultValue: '#ffffff'
   }
 }, {
   sequelize,
