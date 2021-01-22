@@ -36,7 +36,7 @@ tags.post('/', async (ctx, next) => {
     })
     await tag.save()
 
-    ctx.body = msg('succ')
+    ctx.body = data(tag)
   } catch (error) {
     ctx.body = err(error.message)
   }
