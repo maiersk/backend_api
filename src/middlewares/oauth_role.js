@@ -1,5 +1,5 @@
 import { site } from '../config'
-import { err } from './res_msg'
+import { err } from '../lib/res_msg'
 
 export default function oauth () {
   return async function (ctx, next) {
