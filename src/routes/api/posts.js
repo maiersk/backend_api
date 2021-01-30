@@ -1,13 +1,41 @@
 import Router from 'koa-router'
 import Post from '../../models/post'
 import { msg, err, data } from '../../lib/res_msg'
+import { Op } from 'sequelize'
 
 const posts = new Router()
 posts.prefix('/posts')
 
 posts.get('/', async (ctx, next) => {
-  const posts = await Post.findAll({ raw: true })
-  ctx.body = data(posts)
+  const { page = 0, count = 10, query } = ctx.query
+
+  try {
+    if (page < 0 || count < 0) { throw new Error('negative number') }
+
+    let _posts = await Post.findAndCountAll({
+      where: query ? { title: { [Op.like]: `%${query}%` } } : {},
+      raw: true,
+      limit: +count,
+      offset: page !== 0 ? page * +count : page
+    })
+
+    // const _tags = await Tag.findAll({
+    //   where: {
+    //     id: _posts.rows.tags.length ? { [Op.in]: _posts.rows.tags } : {}
+    //   },
+    //   raw: true
+    // })
+    console.log('')
+    // _posts.rows.tags = _tags
+
+    ctx.body = data(_posts.rows, {
+      page: +page,
+      total: _posts.count,
+      total_pages: (_posts.count + +count - 1) / +count
+    })
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 posts.get('/:id', async (ctx, next) => {
@@ -26,7 +54,7 @@ posts.get('/:id', async (ctx, next) => {
 })
 
 posts.post('/', async (ctx, next) => {
-  const userId = ctx.session.userid
+  const userId = ctx.session.user?.id ?? false
   const { title, tags, content } = ctx.request.body
 
   try {
@@ -46,7 +74,7 @@ posts.post('/', async (ctx, next) => {
 })
 
 posts.put('/:id', async (ctx, next) => {
-  const userId = ctx.session.userId
+  const userId = ctx.session.user.id
   const postId = ctx.params.id
   const { title, tags, content } = ctx.request.body
 

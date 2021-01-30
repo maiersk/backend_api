@@ -6,8 +6,22 @@ const comments = new Router()
 comments.prefix('/comments')
 
 comments.get('/', async (ctx, next) => {
-  const comments = await Comment.findAll({ raw: true })
-  ctx.body = data(comments)
+  try {
+    const { page = 0, count = 10 } = ctx.query
+    if (page < 0 || count < 0) { throw new Error('negative number') }
+    const [_comments, total] = await Promise.all([
+      Comment.findAll({
+        raw: true,
+        limit: count,
+        offset: page !== 0 ? page * count : page
+      }),
+      Comment.findAndCountAll({})
+    ])
+
+    ctx.body = data(_comments, { page: +page, total: total.count })
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 comments.get('/:userId', async (ctx, next) => {

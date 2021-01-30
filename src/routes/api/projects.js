@@ -6,8 +6,22 @@ const projects = new Router()
 projects.prefix('/projects')
 
 projects.get('/', async (ctx, next) => {
-  const projects = await Project()
-  ctx.body = data(projects)
+  try {
+    const { page = 0, count = 10 } = ctx.query
+    if (page < 0 || count < 0) { throw new Error('negative number') }
+    const [_project, total] = await Promise.all([
+      Project.findAll({
+        raw: true,
+        limit: count,
+        offset: page !== 0 ? page * count : page
+      }),
+      Project.findAndCountAll({})
+    ])
+
+    ctx.body = data(_project, { page: +page, total: total.count })
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 projects.get('/:id', async (ctx, next) => {

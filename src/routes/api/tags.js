@@ -1,13 +1,35 @@
 import Router from 'koa-router'
 import Tag from '../../models/Tag'
 import { data, msg, err } from '../../lib/res_msg'
+import { Op } from 'sequelize'
 
 const tags = new Router()
 tags.prefix('/tags')
 
 tags.get('/', async (ctx, next) => {
-  const tags = await Tag.findAll({ raw: true })
-  ctx.body = data(tags)
+  const { page = 0, count = 10, query } = ctx.query
+
+  try {
+    if (page < 0 || count < 0) { throw new Error('negative number') }
+
+    const [_tags, total] = await Promise.all([
+      Tag.findAll({
+        where: query ? { name: { [Op.like]: `%${query}%` } } : {},
+        raw: true,
+        limit: +count,
+        offset: page !== 0 ? page * +count : page
+      }),
+      Tag.findAndCountAll({})
+    ])
+
+    ctx.body = data(_tags, {
+      page: +page,
+      total: total.count,
+      total_pages: Math.floor((total.count + +count - 1) / +count)
+    })
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 tags.get('/:id', async (ctx, next) => {

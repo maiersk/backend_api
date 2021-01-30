@@ -7,8 +7,22 @@ const users = new Router()
 users.prefix('/users')
 
 users.get('/', async (ctx, next) => {
-  const users = await User.findAll({ raw: true })
-  ctx.body = data(users)
+  try {
+    const { page = 0, count = 10 } = ctx.query
+    if (page < 0 || count < 0) { throw new Error('negative number') }
+    const [_users, total] = await Promise.all([
+      User.findAll({
+        raw: true,
+        limit: count,
+        offset: page !== 0 ? page * count : page
+      }),
+      User.findAndCountAll({})
+    ])
+
+    ctx.body = data(_users, { page: +page, total: total.count })
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
 })
 
 users.get('/:id', async (ctx, next) => {
