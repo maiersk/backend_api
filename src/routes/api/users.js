@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import oauth from '../../lib/oauth_role'
+import oauth from '../../middlewares/oauth_role'
 import { err, msg, data } from '../../lib/res_msg'
 import User from '../../models/user'
 
