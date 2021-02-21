@@ -1,26 +1,39 @@
-import sequelize from '../database/Sequelize'
-import { DataTypes, Model } from 'sequelize'
+export default (sequelize, dataTypes) => {
+  const Comment = sequelize.define('comment', {
+    postId: {
+      type: dataTypes.INTEGER,
+      allowNull: false
+    },
+    userId: {
+      type: dataTypes.INTEGER,
+      allowNull: false
+    },
+    content: {
+      type: dataTypes.STRING,
+      allowNull: false
+    }
+  })
 
-class Comment extends Model {
+  Comment.associate = (models) => {
+    Comment.belongsTo(models.Post, {
+      as: 'post',
+      foreignKey: 'postId',
+      targetKey: 'id',
+      constraints: false
+    })
 
-}
+    Comment.belongsTo(models.User, {
+      foreignKey: 'userId',
+      targetKey: 'id',
+      constraints: false
+    })
 
-Comment.init({
-  postId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  userId: {
-    type: DataTypes.INTEGER,
-    allowNull: false
-  },
-  content: {
-    type: DataTypes.STRING,
-    allowNull: false
+    Comment.hasMany(models.Reply, {
+      foreignKey: 'commentId',
+      sourceKey: 'id',
+      constraints: false
+    })
   }
-}, {
-  sequelize,
-  modelName: 'comment'
-})
 
-export default Comment
+  return Comment
+}

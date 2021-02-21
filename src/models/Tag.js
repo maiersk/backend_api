@@ -1,22 +1,23 @@
-import sequelize from '../database/Sequelize'
-import { DataTypes, Model } from 'sequelize'
+export default (sequelize, dataTypes) => {
+  const Tag = sequelize.define('tag', {
+    name: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    color: {
+      type: dataTypes.CHAR(7),
+      defaultValue: '#ffffff'
+    }
+  })
 
-class Tag extends Model {
-
-}
-
-Tag.init({
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  color: {
-    type: DataTypes.CHAR(7),
-    defaultValue: '#ffffff'
+  Tag.associate = (models) => {
+    Tag.belongsTo(models.Post, {
+      as: 'post',
+      foreignKey: 'postId',
+      targetKey: 'id',
+      constraints: false
+    })
   }
-}, {
-  sequelize,
-  modelName: 'tag'
-})
 
-export default Tag
+  return Tag
+}

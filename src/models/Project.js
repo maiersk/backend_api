@@ -1,37 +1,29 @@
-import sequelize from '../database/Sequelize'
-import { DataTypes, Model } from 'sequelize'
+export default (sequelize, dataTypes) => {
+  const Project = sequelize.define('project', {
+    name: {
+      type: dataTypes.STRING,
+      allowNull: false
+    },
+    url: {
+      type: dataTypes.CHAR
+    },
+    desction: {
+      type: dataTypes.STRING
+    },
+    content: {
+      type: dataTypes.TEXT
+    },
+    startedTime: {
+      type: dataTypes.TIME
+    },
+    endedTime: {
+      type: dataTypes.TIME
+    },
+    followCount: {
+      type: dataTypes.INTEGER,
+      defaultValue: 0
+    }
+  })
 
-class Project extends Model {
-
+  return Project
 }
-
-Project.init({
-  name: {
-    type: DataTypes.STRING,
-    allowNull: false
-  },
-  url: {
-    type: DataTypes.CHAR
-  },
-  desction: {
-    type: DataTypes.STRING
-  },
-  content: {
-    type: DataTypes.TEXT
-  },
-  startedTime: {
-    type: DataTypes.TIME
-  },
-  endedTime: {
-    type: DataTypes.TIME
-  },
-  followCount: {
-    type: DataTypes.INTEGER,
-    defaultValue: 0
-  }
-}, {
-  sequelize,
-  modelName: 'project'
-})
-
-export default Project

@@ -1,34 +1,29 @@
-import sequelize from '../database/Sequelize'
-import { DataTypes, Model } from 'sequelize'
+export default (sequelize, dataTypes) => {
+  const User = sequelize.define('user', {
+    name: {
+      type: dataTypes.CHAR(60),
+      allowNull: false
+    },
+    oauthType: {
+      type: dataTypes.CHAR(1),
+      allowNull: false
+    },
+    oauthId: {
+      type: dataTypes.CHAR(60),
+      allowNull: false
+    },
+    avatar: {
+      type: dataTypes.STRING
+    },
+    url: {
+      type: dataTypes.STRING(100)
+    }
+  })
 
-class User extends Model {
-  getName () {
-    return this.name
+  User.associate = (models) => {
+    User.hasMany(models.Comment)
+    User.hasMany(models.Reply)
   }
+
+  return User
 }
-
-User.init({
-  name: {
-    type: DataTypes.CHAR(60),
-    allowNull: false
-  },
-  oauthType: {
-    type: DataTypes.CHAR(1),
-    allowNull: false
-  },
-  oauthId: {
-    type: DataTypes.CHAR(60),
-    allowNull: false
-  },
-  avatar: {
-    type: DataTypes.STRING
-  },
-  url: {
-    type: DataTypes.STRING(100)
-  }
-}, {
-  sequelize,
-  modelName: 'user'
-})
-
-export default User
