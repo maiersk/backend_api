@@ -1,6 +1,6 @@
 import axios from 'axios'
 import Router from 'koa-router'
-import User from '../../../models/User'
+import { User } from '../../../models'
 import { site, oauth } from '../../../config'
 import { err } from '../../../lib/res_msg'
 
@@ -42,7 +42,7 @@ gitHub.get('/redirect', async (ctx, next) => {
     })
 
     const githubUser = result.data
-
+    console.log(User)
     let user = await User.findOne({
       where: { oauthId: '' + githubUser.id }
     })

@@ -1,4 +1,4 @@
-export default (sequelize, dataTypes) => {
+module.exports = (sequelize, dataTypes) => {
   const Post = sequelize.define('post', {
     title: {
       type: dataTypes.STRING,
@@ -14,7 +14,7 @@ export default (sequelize, dataTypes) => {
   })
 
   Post.associate = (models) => {
-    Post.hasMany(models.Tag)
+    Post.hasMany(models.PostTags)
     Post.hasMany(models.Comment)
     Post.hasMany(models.Reply)
   }

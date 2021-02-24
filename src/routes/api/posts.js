@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import Post from '../../models/post'
+import { Post, PostTags, Comment } from '../../models'
 import { msg, err, data } from '../../lib/res_msg'
 import { Op } from 'sequelize'
 
@@ -14,19 +14,14 @@ posts.get('/', async (ctx, next) => {
 
     let _posts = await Post.findAndCountAll({
       where: query ? { title: { [Op.like]: `%${query}%` } } : {},
+      include: [
+        { model: PostTags },
+        { model: Comment }
+      ],
       raw: true,
       limit: +count,
       offset: page !== 0 ? page * +count : page
     })
-
-    // const _tags = await Tag.findAll({
-    //   where: {
-    //     id: _posts.rows.tags.length ? { [Op.in]: _posts.rows.tags } : {}
-    //   },
-    //   raw: true
-    // })
-    console.log('')
-    // _posts.rows.tags = _tags
 
     ctx.body = data(_posts.rows, {
       page: +page,
@@ -55,19 +50,21 @@ posts.get('/:id', async (ctx, next) => {
 
 posts.post('/', async (ctx, next) => {
   const userId = ctx.session.user?.id ?? false
-  const { title, tags, content } = ctx.request.body
+  const { title, tags = [], content } = ctx.request.body
 
   try {
     if (!userId) { throw new Error('no login') }
 
-    const post = await Post.build({
-      title,
-      authorId: userId,
-      tags,
-      content
-    })
-    await post.save()
-    ctx.body = data(post)
+    const res = await Promise.all([
+      Post.create({
+        title,
+        authorId: userId,
+        content,
+        tags
+      }, { include: [PostTags] })
+    ])
+
+    ctx.body = data(res[0])
   } catch (error) {
     ctx.body = err(error.message)
   }

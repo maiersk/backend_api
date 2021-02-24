@@ -9,11 +9,10 @@ readdirSync(__dirname).filter((file) => {
   return file !== 'index.js'
 }).forEach((file) => {
   const model = require(path.join(__dirname, file))
-  db[file.replace('.js', '')] = model.default(sequelize, DataTypes)
+  db[file.replace('.js', '')] = model(sequelize, DataTypes)
 })
 
 Object.keys(db).forEach((modelName) => {
-  console.log(modelName)
   if (db[modelName].associate) {
     db[modelName].associate(db)
   }
@@ -21,4 +20,4 @@ Object.keys(db).forEach((modelName) => {
 
 db.sequelize = sequelize
 
-export default db
+module.exports = db

@@ -1,5 +1,11 @@
-export default (sequelize, dataTypes) => {
-  const User = sequelize.define('user', {
+import { Model } from 'sequelize'
+
+module.exports = (sequelize, dataTypes) => {
+  class User extends Model {
+
+  }
+
+  User.init({
     name: {
       type: dataTypes.CHAR(60),
       allowNull: false
@@ -18,7 +24,11 @@ export default (sequelize, dataTypes) => {
     url: {
       type: dataTypes.STRING(100)
     }
-  })
+  }, {
+    sequelize,
+    modelName: 'user'
+  }
+  )
 
   User.associate = (models) => {
     User.hasMany(models.Comment)

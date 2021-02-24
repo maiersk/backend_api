@@ -1,4 +1,4 @@
-export default (sequelize, dataTypes) => {
+module.exports = (sequelize, dataTypes) => {
   const Comment = sequelize.define('comment', {
     postId: {
       type: dataTypes.INTEGER,

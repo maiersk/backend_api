@@ -1,4 +1,4 @@
-export default (sequelize, dataTypes) => {
+module.exports = (sequelize, dataTypes) => {
   const Reply = sequelize.define('reply', {
     comment: {
       type: dataTypes.TEXT,

@@ -1,6 +1,6 @@
 import Router from 'koa-router'
 import { data, err, msg } from '../../lib/res_msg'
-import Project from '../../models/Project'
+import { Project } from '../../models'
 
 const projects = new Router()
 projects.prefix('/projects')

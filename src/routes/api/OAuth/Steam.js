@@ -3,7 +3,7 @@ import axios from 'axios'
 import buildUrl from '../../../util/buildUrl'
 import { site, oauth } from '../../../config/'
 import { err } from '../../../lib/res_msg'
-import User from '../../../models/User'
+import { User } from '../../../models'
 
 const steam = new Router()
 const routerPath = '/oauth/steam'

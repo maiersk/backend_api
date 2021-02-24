@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import Tag from '../../models/Tag'
+import { Tag } from '../../models'
 import { data, msg, err } from '../../lib/res_msg'
 import { Op } from 'sequelize'
 

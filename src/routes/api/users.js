@@ -1,7 +1,7 @@
 import Router from 'koa-router'
 import oauth from '../../middlewares/oauth_role'
 import { err, msg, data } from '../../lib/res_msg'
-import User from '../../models/user'
+import { User } from '../../models'
 
 const users = new Router()
 users.prefix('/users')

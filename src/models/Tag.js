@@ -1,4 +1,4 @@
-export default (sequelize, dataTypes) => {
+module.exports = (sequelize, dataTypes) => {
   const Tag = sequelize.define('tag', {
     name: {
       type: dataTypes.STRING,
@@ -11,12 +11,7 @@ export default (sequelize, dataTypes) => {
   })
 
   Tag.associate = (models) => {
-    Tag.belongsTo(models.Post, {
-      as: 'post',
-      foreignKey: 'postId',
-      targetKey: 'id',
-      constraints: false
-    })
+    Tag.hasMany(models.PostTags)
   }
 
   return Tag
