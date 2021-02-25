@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import { Post, PostTags, Comment } from '../../models'
+import { Post, Tag, Comment } from '../../models'
 import { msg, err, data } from '../../lib/res_msg'
 import { Op } from 'sequelize'
 
@@ -15,10 +15,9 @@ posts.get('/', async (ctx, next) => {
     let _posts = await Post.findAndCountAll({
       where: query ? { title: { [Op.like]: `%${query}%` } } : {},
       include: [
-        { model: PostTags },
+        { model: Tag },
         { model: Comment }
       ],
-      raw: true,
       limit: +count,
       offset: page !== 0 ? page * +count : page
     })
@@ -26,7 +25,7 @@ posts.get('/', async (ctx, next) => {
     ctx.body = data(_posts.rows, {
       page: +page,
       total: _posts.count,
-      total_pages: (_posts.count + +count - 1) / +count
+      total_pages: Math.floor((_posts.count + +count - 1) / +count)
     })
   } catch (error) {
     ctx.body = err(error.message)
@@ -37,7 +36,13 @@ posts.get('/:id', async (ctx, next) => {
   const id = ctx.params.id
 
   try {
-    const post = await Post.findOne({ where: { id } })
+    const post = await Post.findOne({
+      where: { id },
+      include: [
+        { model: Tag },
+        { model: Comment }
+      ]
+    })
     if (post) {
       ctx.body = data(post)
     } else {
@@ -55,16 +60,19 @@ posts.post('/', async (ctx, next) => {
   try {
     if (!userId) { throw new Error('no login') }
 
-    const res = await Promise.all([
-      Post.create({
-        title,
-        authorId: userId,
-        content,
-        tags
-      }, { include: [PostTags] })
-    ])
+    const post = await Post.create({
+      title,
+      userId,
+      content,
+      tags
+    }, {})
+    const _tags = await Tag.findAll({
+      where: { id: tags }
+    })
 
-    ctx.body = data(res[0])
+    await post.setTags(_tags)
+
+    ctx.body = data(post)
   } catch (error) {
     ctx.body = err(error.message)
   }
@@ -73,20 +81,27 @@ posts.post('/', async (ctx, next) => {
 posts.put('/:id', async (ctx, next) => {
   const userId = ctx.session.user.id
   const postId = ctx.params.id
-  const { title, tags, content } = ctx.request.body
+  const { title, tags = [], content } = ctx.request.body
 
   try {
     const post = await Post.findOne({
       where: { id: postId }
     })
-    if (post.authorId !== userId) {
+
+    if (post.userId !== userId) {
       throw new Error('you are not author')
     }
+
+    const _tags = await Tag.findAll({
+      where: { id: tags }
+    })
+
     await Post.update({
       title, tags, content
     }, {
       where: { id: postId }
     })
+    await post.setTags(_tags)
 
     ctx.body = msg('update succ')
   } catch (error) {

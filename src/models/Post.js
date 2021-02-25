@@ -14,7 +14,12 @@ module.exports = (sequelize, dataTypes) => {
   })
 
   Post.associate = (models) => {
-    Post.hasMany(models.PostTags)
+    Post.belongsToMany(models.Tag, {
+      through: models.PostTags,
+      foreignKey: 'postId',
+      otherKey: 'tagId'
+    })
+
     Post.hasMany(models.Comment)
     Post.hasMany(models.Reply)
   }

@@ -1,6 +1,6 @@
 module.exports = (sequelize, dataTypes) => {
   const Reply = sequelize.define('reply', {
-    comment: {
+    content: {
       type: dataTypes.TEXT,
       allowNull: false
     }

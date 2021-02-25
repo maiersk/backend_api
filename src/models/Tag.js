@@ -11,7 +11,11 @@ module.exports = (sequelize, dataTypes) => {
   })
 
   Tag.associate = (models) => {
-    Tag.hasMany(models.PostTags)
+    Tag.belongsToMany(models.Post, {
+      through: models.PostTags,
+      foreignKey: 'tagId',
+      otherKey: 'postId'
+    })
   }
 
   return Tag
