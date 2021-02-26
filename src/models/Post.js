@@ -9,7 +9,8 @@ module.exports = (sequelize, dataTypes) => {
       defaultValue: ''
     },
     viewCount: {
-      type: dataTypes.INET
+      type: dataTypes.INTEGER,
+      defaultValue: 0
     }
   })
 
