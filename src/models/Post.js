@@ -17,7 +17,9 @@ module.exports = (sequelize, dataTypes) => {
     Post.belongsToMany(models.Tag, {
       through: models.PostTags,
       foreignKey: 'postId',
-      otherKey: 'tagId'
+      otherKey: 'tagId',
+      onDelete: 'CASCADE',
+      onUpdate: 'CASCADE'
     })
 
     Post.hasMany(models.Comment)
