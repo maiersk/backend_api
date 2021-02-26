@@ -34,6 +34,7 @@ posts.get('/', async (ctx, next) => {
 
 posts.get('/:id', async (ctx, next) => {
   const id = ctx.params.id
+  const { view } = ctx.request.query
 
   try {
     const post = await Post.findOne({
@@ -44,6 +45,11 @@ posts.get('/:id', async (ctx, next) => {
       ]
     })
     if (post) {
+      if (view === '1') {
+        post.viewCount += 1
+        await post.save()
+      }
+
       ctx.body = data(post)
     } else {
       throw new Error('not find')
