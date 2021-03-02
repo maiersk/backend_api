@@ -85,11 +85,13 @@ posts.post('/', async (ctx, next) => {
 })
 
 posts.put('/:id', async (ctx, next) => {
-  const userId = ctx.session.user.id
+  const userId = ctx.session.user?.id ?? false
   const postId = ctx.params.id
   const { title, tags = [], content } = ctx.request.body
 
   try {
+    if (!userId) { throw new Error('no login') }
+
     const post = await Post.findOne({
       where: { id: postId }
     })
