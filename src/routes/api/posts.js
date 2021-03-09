@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import { Post, Tag, Comment } from '../../models'
+import { Post, Tag, Comment, User } from '../../models'
 import { msg, err, data } from '../../lib/res_msg'
 import { Op } from 'sequelize'
 
@@ -16,7 +16,8 @@ posts.get('/', async (ctx, next) => {
       where: query ? { title: { [Op.like]: `%${query}%` } } : {},
       include: [
         { model: Tag },
-        { model: Comment }
+        { model: Comment },
+        { model: User }
       ],
       limit: +count,
       offset: page !== 0 ? page * +count : page

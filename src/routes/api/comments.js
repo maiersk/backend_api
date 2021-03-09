@@ -1,19 +1,18 @@
 import Router from 'koa-router'
 import { Comment, User } from '../../models'
 import { data, err, msg } from '../../lib/res_msg'
-import { Op } from 'sequelize'
 
 const comments = new Router()
 comments.prefix('/comments')
 
 comments.get('/', async (ctx, next) => {
-  const { page = 0, count = 10, query } = ctx.query
+  const { page = 0, count = 10, postId } = ctx.query
 
   try {
     if (page < 0 || count < 0) { throw new Error('negative number') }
 
     let _comment = await Comment.findAndCountAll({
-      where: query ? { title: { [Op.like]: `%${query}%` } } : {},
+      where: postId ? { postId } : {},
       include: [
         { model: User }
       ],

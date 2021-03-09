@@ -23,6 +23,7 @@ module.exports = (sequelize, dataTypes) => {
       onUpdate: 'CASCADE'
     })
 
+    Post.belongsTo(models.User)
     Post.hasMany(models.Comment)
     Post.hasMany(models.Reply)
   }
