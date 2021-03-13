@@ -1,5 +1,5 @@
 import Router from 'koa-router'
-import { Comment, User } from '../../models'
+import { Comment, User, Reply } from '../../models'
 import { data, err, msg } from '../../lib/res_msg'
 
 const comments = new Router()
@@ -14,7 +14,8 @@ comments.get('/', async (ctx, next) => {
     let _comment = await Comment.findAndCountAll({
       where: postId ? { postId } : {},
       include: [
-        { model: User }
+        { model: User },
+        { model: Reply, include: [{ model: User }] }
       ],
       limit: +count,
       offset: page !== 0 ? page * +count : page
@@ -49,6 +50,26 @@ comments.post('/', async (ctx, next) => {
   }
 })
 
+comments.post('/reply', async (ctx, next) => {
+  const userId = ctx.session?.user?.id ?? false
+  const { postId, commentId, content } = ctx.request.body
+
+  try {
+    if (!userId) { throw new Error('no login') }
+
+    const reply = await Reply.create({
+      userId,
+      postId,
+      commentId,
+      content
+    })
+
+    ctx.body = data(reply)
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
+})
+
 comments.put('/:id', async (ctx, next) => {
   const userId = ctx.session?.user?.id ?? false
   const id = ctx.params.id
@@ -73,8 +94,10 @@ comments.put('/:id', async (ctx, next) => {
 
 comments.delete('/:id', async (ctx, next) => {
   const id = ctx.params.id
+  const userId = ctx.session?.user?.id ?? false
 
   try {
+    if (!userId) { throw new Error('no login') }
     const comment = await Comment.findByPk(id)
 
     if (comment) {
@@ -85,6 +108,29 @@ comments.delete('/:id', async (ctx, next) => {
     } else {
       throw new Error('not find')
     }
+  } catch (error) {
+    ctx.body = err(error.message)
+  }
+})
+
+comments.delete('/reply/:id', async (ctx, next) => {
+  const id = ctx.params.id
+  const userId = ctx.session?.user?.id ?? false
+
+  try {
+    if (!userId) { throw new Error('no login') }
+    const reply = await Reply.findByPk(id)
+
+    if (reply) {
+      await reply.destroy({
+        where: { id }
+      })
+      ctx.body = msg('deleted')
+    } else {
+      throw new Error('not find')
+    }
+
+    ctx.body = data(reply)
   } catch (error) {
     ctx.body = err(error.message)
   }
