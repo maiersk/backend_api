@@ -6,19 +6,22 @@ const projects = new Router()
 projects.prefix('/projects')
 
 projects.get('/', async (ctx, next) => {
-  try {
-    const { page = 0, count = 10 } = ctx.query
-    if (page < 0 || count < 0) { throw new Error('negative number') }
-    const [_project, total] = await Promise.all([
-      Project.findAll({
-        raw: true,
-        limit: count,
-        offset: page !== 0 ? page * count : page
-      }),
-      Project.findAndCountAll({})
-    ])
+  const { page = 0, count = 10 } = ctx.query
 
-    ctx.body = data(_project, { page: +page, total: total.count })
+  try {
+    if (page < 0 || count < 0) { throw new Error('negative number') }
+  
+    let _project = await Project.findAndCountAll({
+      where: query ? { title: { [Op.like]: `%${query}%` } } : {},
+      limit: +count,
+      offset: page !== 0 ? page * +count : page
+    })
+
+    ctx.body = data(_project.rows, {
+      page: +page,
+      total: _project.count,
+      total_pages: Math.floor((_project.count + +count - 1) / +count)
+    })
   } catch (error) {
     ctx.body = err(error.message)
   }
