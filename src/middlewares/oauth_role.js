@@ -1,16 +1,20 @@
 import { site } from '../config'
 import { err } from '../lib/res_msg'
 
-export default function oauth () {
+export default function oauth (admin) {
   return async function (ctx, next) {
     try {
       if (ctx.session?.user) {
-        if (ctx.session.user.oauthId === site.owner.githubId ||
-          ctx.session.user.oauthId === site.owner.steamId
-        ) {
-          await next()
+        if (admin) {
+          if (ctx.session.user.oauthId === site.owner.githubId ||
+            ctx.session.user.oauthId === site.owner.steamId
+          ) {
+            await next()
+          } else {
+            throw new Error('not webSite Owner')
+          }
         } else {
-          throw new Error('not webSite Owner')
+          await next()
         }
       } else {
         throw new Error('no user login')

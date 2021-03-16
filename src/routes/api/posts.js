@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import { Post, Tag, Comment, User } from '../../models'
 import { msg, err, data } from '../../lib/res_msg'
 import { Op } from 'sequelize'
+import oauth from '../../middlewares/oauth_role'
 
 const posts = new Router()
 posts.prefix('/posts')
@@ -65,8 +66,6 @@ posts.post('/', async (ctx, next) => {
   const { title, tags = [], content } = ctx.request.body
 
   try {
-    if (!userId) { throw new Error('no login') }
-
     const post = await Post.create({
       title,
       userId,
@@ -85,14 +84,12 @@ posts.post('/', async (ctx, next) => {
   }
 })
 
-posts.put('/:id', async (ctx, next) => {
+posts.put('/:id', oauth(), async (ctx, next) => {
   const userId = ctx.session.user?.id ?? false
   const postId = ctx.params.id
   const { title, tags = [], content } = ctx.request.body
 
   try {
-    if (!userId) { throw new Error('no login') }
-
     const post = await Post.findOne({
       where: { id: postId }
     })
@@ -118,7 +115,7 @@ posts.put('/:id', async (ctx, next) => {
   }
 })
 
-posts.delete('/:id', async (ctx, next) => {
+posts.delete('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
 
   try {

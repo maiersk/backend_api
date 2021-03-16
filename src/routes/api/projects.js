@@ -1,6 +1,7 @@
 import Router from 'koa-router'
 import { data, err, msg } from '../../lib/res_msg'
 import { Project } from '../../models'
+import oauth from '../../middlewares/oauth_role'
 
 const projects = new Router()
 projects.prefix('/projects')
@@ -10,9 +11,8 @@ projects.get('/', async (ctx, next) => {
 
   try {
     if (page < 0 || count < 0) { throw new Error('negative number') }
-  
+
     let _project = await Project.findAndCountAll({
-      where: query ? { title: { [Op.like]: `%${query}%` } } : {},
       limit: +count,
       offset: page !== 0 ? page * +count : page
     })
@@ -44,7 +44,7 @@ projects.get('/:id', async (ctx, next) => {
   }
 })
 
-projects.post('/', async (ctx, next) => {
+projects.post('/', oauth(), async (ctx, next) => {
   const {
     name,
     url,
@@ -66,7 +66,7 @@ projects.post('/', async (ctx, next) => {
   }
 })
 
-projects.put('/:id', async (ctx, next) => {
+projects.put('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
   const {
     name,
@@ -90,7 +90,7 @@ projects.put('/:id', async (ctx, next) => {
   }
 })
 
-projects.delete('/:id', async (ctx, next) => {
+projects.delete('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
 
   try {

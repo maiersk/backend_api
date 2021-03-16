@@ -1,6 +1,7 @@
 import Router from 'koa-router'
 import { Comment, User, Reply } from '../../models'
 import { data, err, msg } from '../../lib/res_msg'
+import oauth from '../../middlewares/oauth_role'
 
 const comments = new Router()
 comments.prefix('/comments')
@@ -31,13 +32,11 @@ comments.get('/', async (ctx, next) => {
   }
 })
 
-comments.post('/', async (ctx, next) => {
+comments.post('/', oauth(), async (ctx, next) => {
   const userId = ctx.session?.user?.id ?? false
   const { postId, content } = ctx.request.body
 
   try {
-    if (!userId) { throw new Error('no login') }
-
     const comment = await Comment.create({
       userId,
       postId,
@@ -50,13 +49,11 @@ comments.post('/', async (ctx, next) => {
   }
 })
 
-comments.post('/reply', async (ctx, next) => {
+comments.post('/reply', oauth(), async (ctx, next) => {
   const userId = ctx.session?.user?.id ?? false
   const { postId, commentId, content } = ctx.request.body
 
   try {
-    if (!userId) { throw new Error('no login') }
-
     const reply = await Reply.create({
       userId,
       postId,
@@ -70,14 +67,12 @@ comments.post('/reply', async (ctx, next) => {
   }
 })
 
-comments.put('/:id', async (ctx, next) => {
+comments.put('/:id', oauth(), async (ctx, next) => {
   const userId = ctx.session?.user?.id ?? false
   const id = ctx.params.id
   const { content } = ctx.request.body
 
   try {
-    if (!userId) { throw new Error('no login') }
-
     const comment = await Comment.findOne({
       where: { id }
     })
@@ -92,12 +87,10 @@ comments.put('/:id', async (ctx, next) => {
   }
 })
 
-comments.delete('/:id', async (ctx, next) => {
+comments.delete('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
-  const userId = ctx.session?.user?.id ?? false
 
   try {
-    if (!userId) { throw new Error('no login') }
     const comment = await Comment.findByPk(id)
 
     if (comment) {
@@ -113,12 +106,10 @@ comments.delete('/:id', async (ctx, next) => {
   }
 })
 
-comments.delete('/reply/:id', async (ctx, next) => {
+comments.delete('/reply/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
-  const userId = ctx.session?.user?.id ?? false
 
   try {
-    if (!userId) { throw new Error('no login') }
     const reply = await Reply.findByPk(id)
 
     if (reply) {

@@ -2,6 +2,7 @@ import Router from 'koa-router'
 import { Tag } from '../../models'
 import { data, msg, err } from '../../lib/res_msg'
 import { Op } from 'sequelize'
+import oauth from '../../middlewares/oauth_role'
 
 const tags = new Router()
 tags.prefix('/tags')
@@ -49,7 +50,7 @@ tags.get('/:id', async (ctx, next) => {
   }
 })
 
-tags.post('/', async (ctx, next) => {
+tags.post('/', oauth(), async (ctx, next) => {
   const { name, color } = ctx.request.body
 
   try {
@@ -64,7 +65,7 @@ tags.post('/', async (ctx, next) => {
   }
 })
 
-tags.put('/:id', async (ctx, next) => {
+tags.put('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
   const { name, color } = ctx.request.body
 
@@ -81,7 +82,7 @@ tags.put('/:id', async (ctx, next) => {
   }
 })
 
-tags.delete('/:id', async (ctx, next) => {
+tags.delete('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
   try {
     await Tag.destroy({

@@ -69,7 +69,7 @@ users.post('/', oauth(), async (ctx, next) => {
   }
 })
 
-users.put('/:id', async (ctx, next) => {
+users.put('/:id', oauth(), async (ctx, next) => {
   const id = ctx.params.id
   const {
     name,
